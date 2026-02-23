@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: patient-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/pms
+    username: postgres
+    password: Sanjay@098
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+      show-sql: true
+
+
+server:
+  port: 3000
