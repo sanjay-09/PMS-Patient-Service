@@ -12,5 +12,10 @@ spring:
       show-sql: true
 
 
+billing:
+  service:
+    address: localhost
+    port: 3001
+
 server:
   port: 3000

@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.12-SNAPSHOT'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'com.google.protobuf' version '0.9.5'
 }
 
 group = 'com.example'
@@ -25,16 +26,51 @@ repositories {
 	maven { url = 'https://repo.spring.io/snapshot' }
 }
 
+ext {
+	set('springGrpcVersion', "1.0.2")
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// ── gRPC Client ──────────────────────────────────────────────────────────
+	implementation 'org.springframework.grpc:spring-grpc-client-spring-boot-starter'
+	implementation 'io.grpc:grpc-services'
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.grpc:spring-grpc-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.grpc:spring-grpc-dependencies:${springGrpcVersion}"
+	}
+}
+
+// ── Protobuf: generate stubs from .proto files ────────────────────────────────
+protobuf {
+	protoc {
+		artifact = 'com.google.protobuf:protoc'
+	}
+	plugins {
+		grpc {
+			artifact = 'io.grpc:protoc-gen-grpc-java'
+		}
+	}
+	generateProtoTasks {
+		all()*.plugins {
+			grpc {
+				option '@generated=omit'
+			}
+		}
+	}
 }
 
 tasks.named('test') {
